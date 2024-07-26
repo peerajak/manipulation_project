@@ -1,0 +1,56 @@
+===================== Sim robot ===========
+=== Task 1. ===
+Terminal 1.
+source ~/ros2_ws/install/setup.bash
+ros2 launch the_construct_office_gazebo warehouse_ur3e.launch.xml
+
+    Terminal 1.1
+    ros2 control list_controllers
+        joint_trajectory_controller[joint_trajectory_controller/JointTrajectoryController] active
+        joint_state_broadcaster[joint_state_broadcaster/JointStateBroadcaster] active
+        gripper_controller  [position_controllers/GripperActionController] active
+
+    Terminal 1.2
+    ros2 topic echo /joint_states
+        header:
+        stamp:
+            sec: 463
+            nanosec: 300000000
+        frame_id: ''
+        name:
+        - shoulder_pan_joint
+        - shoulder_lift_joint
+        - elbow_joint
+        - wrist_2_joint
+        - wrist_3_joint
+        - wrist_1_joint
+        - robotiq_85_left_knuckle_joint
+        position:
+        - 9.880466367739871e-05
+        - -1.569999877361429
+        - -3.382259716744329e-07
+
+Terminal 2.
+ros2 launch my_moveit_config move_group.launch.py
+Terminal 3.
+ros2 launch my_moveit_config moveit_rviz.launch.py
+=== Task 2. ===
+Terminal 1.
+source ~/ros2_ws/install/setup.bash
+ros2 launch the_construct_office_gazebo warehouse_ur3e.launch.xml
+
+Terminal 2.
+ros2 launch my_moveit_config move_group.launch.py
+
+Terminal 3.
+ros2 launch my_moveit_config moveit_rviz.launch.py
+
+Terminal 4.
+ros2 launch moveit2_scripts pick_place.launch.py
+
+================ Real Robot ==================
+=== Task 1.5 ====
+Terminal 1.
+ros2 launch my_moveit_config move_group.launch.py
+Terminal 2.
+ros2 launch my_moveit_config moveit_rviz.launch.py
