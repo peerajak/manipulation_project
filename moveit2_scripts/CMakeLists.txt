@@ -43,6 +43,36 @@ ament_target_dependencies(test_trajectory
 	moveit_ros_planning
 	control_msgs)
 
+add_executable(cartesian_to_preapproach
+    src/cartesian_to_preapproach.cpp)
+target_include_directories(cartesian_to_preapproach
+    PUBLIC include)
+ament_target_dependencies(cartesian_to_preapproach
+    ament_cmake
+	rclcpp
+	rclcpp_action
+	moveit_core
+	moveit_ros_planning_interface
+	interactive_markers
+	moveit_ros_planning
+	control_msgs)
+
+
+add_executable(test_gripper
+    src/test_gripper.cpp)
+target_include_directories(test_gripper
+    PUBLIC include)
+ament_target_dependencies(test_gripper
+    ament_cmake
+	rclcpp
+	rclcpp_action
+	moveit_core
+	moveit_ros_planning_interface
+	interactive_markers
+	moveit_ros_planning
+	control_msgs)
+
+
 add_executable(pick_place
     src/pick_place.cpp)
 target_include_directories(pick_place
@@ -61,6 +91,8 @@ ament_target_dependencies(pick_place
 install(TARGETS 
 	test_trajectory
 	pick_place
+	cartesian_to_preapproach
+	test_gripper
     DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -48,6 +48,31 @@ ros2 launch my_moveit_config moveit_rviz.launch.py
 Terminal 4.
 ros2 launch moveit2_scripts pick_place.launch.py
 
+//////////////// Control robot position manually
+Terminal 1.
+source ~/ros2_ws/install/setup.bash
+ros2 launch the_construct_office_gazebo warehouse_ur3e.launch.xml
+
+Terminal 2.
+ros2 run rqt_joint_trajectory_controller rqt_joint_trajectory_controller
+
+Terminal 3. If Get End effector position
+ros2 run tf2_ros tf2_echo base_link tool0
+
+Terminal 4. if Want to know joint positions
+ros2 topic echo /joint_states
+
+Open Grip CLI
+ros2 action send_goal /gripper_controller/gripper_cmd control_msgs/action/GripperCommand "command:
+  position: 0.0
+  max_effort: 0.0
+"
+
+Close Grip CLI
+ros2 action send_goal /gripper_controller/gripper_cmd control_msgs/action/GripperCommand "command:
+  position: 0.8
+  max_effort: 0.0
+"
 ================ Real Robot ==================
 === Task 1.5 ====
 Terminal 1.
