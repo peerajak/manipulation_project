@@ -5,7 +5,7 @@
 #include <moveit_msgs/msg/display_trajectory.hpp>
 
 #define MOVE_TO_PREAPPROACH 1
-#define FINEUNE 1
+#define FINETUNE 1
 #define JUMP_PICK_OBJECT 1
 #define GRIPPING 1
 #define RETREAT 1
@@ -68,12 +68,12 @@ int main(int argc, char **argv) {
   move_group_arm.setPoseTarget(target_pose1);
 */
 
-  joint_group_positions_arm[0] =3.434;
-  joint_group_positions_arm[1] =-1.8398;
+  joint_group_positions_arm[0] = 3.434;
+  joint_group_positions_arm[1] =-1.7171;
   joint_group_positions_arm[2] =-1.735;
   joint_group_positions_arm[3] =-1.226;
-  joint_group_positions_arm[4] =1.589;
-  joint_group_positions_arm[5] =0.244;
+  joint_group_positions_arm[4] = 1.589;
+  joint_group_positions_arm[5] = 0.244;
   joint_group_positions_arm[6] = 0.0;//Gripper
 
   move_group_arm.setJointValueTarget(joint_group_positions_arm);	
@@ -119,18 +119,20 @@ int main(int argc, char **argv) {
 //   target_pose1.position.z = 0.3;
 //   move_group_arm.setPoseTarget(target_pose1);
 
-  double xy_resolution = 0.00005, xy_goal_threshold = 0.0001;
+  double xy_resolution = 0.00001, xy_goal_threshold = 0.00001;
   double target_x = 0.340, target_y = -0.02;
   std::vector<geometry_msgs::msg::Pose> waypoints;
   #if FINETUNE
-  while(abs(target_pose1.position.x - target_x)>xy_goal_threshold )
+  while(abs(target_pose1.position.x - target_x)>xy_goal_threshold ){
     target_pose1.position.x += xy_resolution*
                 (target_x - target_pose1.position.x )/abs(target_pose1.position.x - target_x);
     waypoints.push_back(target_pose1);
-  while(abs(target_pose1.position.y - target_y)>xy_goal_threshold )
+  }
+  while(abs(target_pose1.position.y - target_y)>xy_goal_threshold ){
     target_pose1.position.y += xy_resolution*
                 (target_y - target_pose1.position.y )/abs(target_pose1.position.y - target_y);
     waypoints.push_back(target_pose1);
+  }
 
   moveit_msgs::msg::RobotTrajectory trajectory;
 
@@ -150,8 +152,17 @@ int main(int argc, char **argv) {
     current_pose.orientation.w);
   #endif
   #if JUMP_PICK_OBJECT
+  RCLCPP_INFO(LOGGER, "Open Gripper!");
+
+  joint_group_positions_gripper[2] = 0.55;
+  move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
+  moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
+  bool success_gripper = (move_group_gripper.plan(my_plan_gripper) ==
+                     moveit::core::MoveItErrorCode::SUCCESS);
+
+  move_group_gripper.execute(my_plan_gripper);
   std::vector<geometry_msgs::msg::Pose> approach_waypoints;
-  target_pose1.position.z -= 0.03;
+  target_pose1.position.z -= 0.08;
   approach_waypoints.push_back(target_pose1);
 
   //target_pose1.position.z -= 0.03;
@@ -160,7 +171,7 @@ int main(int argc, char **argv) {
   // JUMP code
   moveit_msgs::msg::RobotTrajectory trajectory_approach;
 
-  double fraction = move_group_arm.computeCartesianPath(
+  double fraction2 = move_group_arm.computeCartesianPath(
       approach_waypoints, eef_step, jump_threshold, trajectory_approach);
 
   move_group_arm.execute(trajectory_approach);
@@ -168,21 +179,13 @@ int main(int argc, char **argv) {
   #endif
 
   #if GRIPPING
-  RCLCPP_INFO(LOGGER, "Open Gripper!");
 
-  joint_group_positions_gripper[2] = 0.0;
-  move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
-  moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
-  bool success_gripper = (move_group_gripper.plan(my_plan_gripper) ==
-                     moveit::core::MoveItErrorCode::SUCCESS);
-
-  move_group_gripper.execute(my_plan_gripper);
 
   // Sleep for some seconds
   std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   // Close Gripper
   // set name target.
-  joint_group_positions_gripper[2] = 0.62;
+  joint_group_positions_gripper[2] = 0.64658;
   move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
   moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper2;
   success_gripper = (move_group_gripper.plan(my_plan_gripper2) ==
@@ -197,7 +200,7 @@ int main(int argc, char **argv) {
   RCLCPP_INFO(LOGGER, "Retreat from object!");
 
   std::vector<geometry_msgs::msg::Pose> retreat_waypoints;
-  target_pose1.position.z += 0.03;
+  target_pose1.position.z += 0.08;
   retreat_waypoints.push_back(target_pose1);
 
   target_pose1.position.z += 0.03;
