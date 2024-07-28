@@ -70,7 +70,7 @@ ros2 action send_goal /gripper_controller/gripper_cmd control_msgs/action/Grippe
 
 Close Grip CLI
 ros2 action send_goal /gripper_controller/gripper_cmd control_msgs/action/GripperCommand "command:
-  position: 0.8
+  position: 0.63
   max_effort: 0.0
 "
 ================ Real Robot ==================
