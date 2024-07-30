@@ -53,6 +53,8 @@ int main(int argc, char **argv) {
   move_group_gripper.setStartStateToCurrentState();
   const double jump_threshold = 0.0;
   const double eef_step = 0.0001;
+   double target_x = 0.340, target_y = -0.02, close_gripper_angle = 0.646568;//FOUND 0.646568 the best// 0.646565-0.646570// 0.646570 best value: can pick up but change form
+ //while(true) {
   #if MOVE_TO_PREAPPROACH
   // Pregrasp
   RCLCPP_INFO(LOGGER, "Pregrasp Position");
@@ -120,8 +122,10 @@ int main(int argc, char **argv) {
 //   move_group_arm.setPoseTarget(target_pose1);
 
   double xy_resolution = 0.00001, xy_goal_threshold = 0.00001;
-  double target_x = 0.340, target_y = -0.02;
+
+
   std::vector<geometry_msgs::msg::Pose> waypoints;
+
   #if FINETUNE
   while(abs(target_pose1.position.x - target_x)>xy_goal_threshold ){
     target_pose1.position.x += xy_resolution*
@@ -152,8 +156,9 @@ int main(int argc, char **argv) {
     current_pose.orientation.w);
   #endif
   #if JUMP_PICK_OBJECT
-  RCLCPP_INFO(LOGGER, "Open Gripper!");
 
+ 
+  RCLCPP_INFO(LOGGER, "Open Gripper! Current Target: x:%f y:%f close_angle:%f", target_x, target_y, close_gripper_angle);
   joint_group_positions_gripper[2] = 0.55;
   move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
   moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
@@ -185,7 +190,7 @@ int main(int argc, char **argv) {
   std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   // Close Gripper
   // set name target.
-  joint_group_positions_gripper[2] = 0.64658;
+  joint_group_positions_gripper[2] = close_gripper_angle;
   move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
   moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper2;
   success_gripper = (move_group_gripper.plan(my_plan_gripper2) ==
@@ -197,14 +202,23 @@ int main(int argc, char **argv) {
 
     // Retreat
   #if RETREAT
+  geometry_msgs::msg::Pose current_pose2 =
+  move_group_arm.getCurrentPose().pose;
   RCLCPP_INFO(LOGGER, "Retreat from object!");
-
+  geometry_msgs::msg::Pose target_pose2;
+  target_pose2.position.x = current_pose2.position.x;
+  target_pose2.position.y = current_pose2.position.y;
+  target_pose2.position.z = current_pose2.position.z;
+  target_pose2.orientation.x = -1.0;
+  target_pose2.orientation.y = 0.00;
+  target_pose2.orientation.z = 0.00;
+  target_pose2.orientation.w = 0.00;
   std::vector<geometry_msgs::msg::Pose> retreat_waypoints;
-  target_pose1.position.z += 0.08;
-  retreat_waypoints.push_back(target_pose1);
+  target_pose2.position.z += 0.08;
+  retreat_waypoints.push_back(target_pose2);
 
-  target_pose1.position.z += 0.03;
-  retreat_waypoints.push_back(target_pose1);
+//   target_pose2.position.z += 0.03;
+//   retreat_waypoints.push_back(target_pose2);
 
   moveit_msgs::msg::RobotTrajectory trajectory_retreat;
 
@@ -213,6 +227,8 @@ int main(int argc, char **argv) {
 
   move_group_arm.execute(trajectory_retreat);
   #endif
+  // close_gripper_angle += 0.00001;
+  //}//end while
   rclcpp::shutdown();
   return 0;
 }

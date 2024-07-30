@@ -47,7 +47,7 @@ ros2 launch my_moveit_config moveit_rviz.launch.py
 
 Terminal 4.
 ros2 launch moveit2_scripts pick_place.launch.py
-
+ros2 launch moveit2_scripts cartesian_to_preapproach.launch.py
 //////////////// Control robot position manually
 Terminal 1.
 source ~/ros2_ws/install/setup.bash
@@ -70,8 +70,8 @@ ros2 action send_goal /gripper_controller/gripper_cmd control_msgs/action/Grippe
 
 Close Grip CLI
 ros2 action send_goal /gripper_controller/gripper_cmd control_msgs/action/GripperCommand "command:
-  position: 0.63
-  max_effort: 0.0
+  position: 0.64
+  max_effort: 5.0
 "
 ================ Real Robot ==================
 === Task 1.5 ====
@@ -79,3 +79,12 @@ Terminal 1.
 ros2 launch my_moveit_config move_group.launch.py
 Terminal 2.
 ros2 launch my_moveit_config moveit_rviz.launch.py
+
+
+///// Param
+
+ros2 service call /move_group/get_parameters rcl_interfaces/srv/GetParameters names:\ ['robot_description_planning.joint_limits.robotiq_85_left_knuckle_joint.max_effort']\
+ros2 service call /move_group/list_parameters rcl_interfaces/srv/ListParameters > move_group_param_list.txt
+awk 'BEGIN{RS=","}{print $1}' move_group_param_list.txt | grep -i effort > move_group_param_list2.txt
+ros2 param set /gripper_controller max_effort 50.0
+ros2 param get /gripper_controller max_effort
