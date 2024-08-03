@@ -53,7 +53,8 @@ int main(int argc, char **argv) {
   move_group_gripper.setStartStateToCurrentState();
   const double jump_threshold = 0.0;
   const double eef_step = 0.0001;
-   double target_x = 0.340, target_y = -0.02, close_gripper_angle = 0.646568;//FOUND 0.646568 the best// 0.646565-0.646570// 0.646570 best value: can pick up but change form
+  double target_x = 0.340, target_y = -0.02;
+  double close_gripper_angle = 0.6467;// Found 6467 Problem solved.
  //while(true) {
   #if MOVE_TO_PREAPPROACH
   // Pregrasp
