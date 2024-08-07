@@ -22,7 +22,6 @@ int main(int argc, char **argv) {
   executor.add_node(move_group_node);
   std::thread([&executor]() { executor.spin(); }).detach();
 
-
   static const std::string PLANNING_GROUP_ARM = "ur_manipulator";
   static const std::string PLANNING_GROUP_GRIPPER = "gripper";
 
@@ -52,56 +51,53 @@ int main(int argc, char **argv) {
   move_group_arm.setStartStateToCurrentState();
   move_group_gripper.setStartStateToCurrentState();
   const double jump_threshold = 0.0;
-  const double eef_step = 0.0001;
+  const double eef_step = 0.01;
   double target_x = 0.340, target_y = -0.02;
-  double close_gripper_angle = 0.6467;// Found 6467 Problem solved.
- //while(true) {
-  #if MOVE_TO_PREAPPROACH
+  double close_gripper_angle =
+      0.646680; // Found 6468. Found 0.64668 another value which picked: 0.646568
+  // TODO try to slow down close grip speed.
+  // while(true) {
+#if MOVE_TO_PREAPPROACH
   // Pregrasp
   RCLCPP_INFO(LOGGER, "Pregrasp Position");
-/*
-  geometry_msgs::msg::Pose target_pose1;
-  target_pose1.orientation.x = -1.0;
-  target_pose1.orientation.y = 0.00;
-  target_pose1.orientation.z = 0.00;
-  target_pose1.orientation.w = 0.00;
-  target_pose1.position.x = 0.343;
-  target_pose1.position.y = 0.132;
-  target_pose1.position.z = 0.264;
-  move_group_arm.setPoseTarget(target_pose1);
-*/
+  /*
+    geometry_msgs::msg::Pose target_pose1;
+    target_pose1.orientation.x = -1.0;
+    target_pose1.orientation.y = 0.00;
+    target_pose1.orientation.z = 0.00;
+    target_pose1.orientation.w = 0.00;
+    target_pose1.position.x = 0.343;
+    target_pose1.position.y = 0.132;
+    target_pose1.position.z = 0.264;
+    move_group_arm.setPoseTarget(target_pose1);
+  */
 
   joint_group_positions_arm[0] = 3.434;
-  joint_group_positions_arm[1] =-1.7171;
-  joint_group_positions_arm[2] =-1.735;
-  joint_group_positions_arm[3] =-1.226;
+  joint_group_positions_arm[1] = -1.7171;
+  joint_group_positions_arm[2] = -1.735;
+  joint_group_positions_arm[3] = -1.226;
   joint_group_positions_arm[4] = 1.589;
   joint_group_positions_arm[5] = 0.244;
-  joint_group_positions_arm[6] = 0.0;//Gripper
+  joint_group_positions_arm[6] = 0.0; // Gripper
 
-  move_group_arm.setJointValueTarget(joint_group_positions_arm);	
+  move_group_arm.setJointValueTarget(joint_group_positions_arm);
   moveit::planning_interface::MoveGroupInterface::Plan my_plan_arm;
   bool success_arm = (move_group_arm.plan(my_plan_arm) ==
                       moveit::core::MoveItErrorCode::SUCCESS);
-  
 
   move_group_arm.execute(my_plan_arm);
 
-  #endif
+#endif
 
   // print current pose
-  geometry_msgs::msg::Pose current_pose =
-    move_group_arm.getCurrentPose().pose;
+  geometry_msgs::msg::Pose current_pose = move_group_arm.getCurrentPose().pose;
 
   // Print the current pose of the end effector
   RCLCPP_INFO(LOGGER, "Current pose: %f %f %f %f %f %f %f",
-    current_pose.position.x,
-    current_pose.position.y,
-    current_pose.position.z,
-    current_pose.orientation.x,
-    current_pose.orientation.y,
-    current_pose.orientation.z,
-    current_pose.orientation.w);
+              current_pose.position.x, current_pose.position.y,
+              current_pose.position.z, current_pose.orientation.x,
+              current_pose.orientation.y, current_pose.orientation.z,
+              current_pose.orientation.w);
 
   RCLCPP_INFO(LOGGER, "Approach to object!");
   geometry_msgs::msg::Pose target_pose1;
@@ -112,35 +108,35 @@ int main(int argc, char **argv) {
   target_pose1.orientation.y = 0.00;
   target_pose1.orientation.z = 0.00;
   target_pose1.orientation.w = 0.00;
-//   geometry_msgs::msg::Pose target_pose1;
-//   target_pose1.orientation.x = -1.0;
-//   target_pose1.orientation.y = 0.00;
-//   target_pose1.orientation.z = 0.00;
-//   target_pose1.orientation.w = 0.00;
-//   target_pose1.position.x = 0.3375;
-//   target_pose1.position.y = -0.018;
-//   target_pose1.position.z = 0.3;
-//   move_group_arm.setPoseTarget(target_pose1);
+  //   geometry_msgs::msg::Pose target_pose1;
+  //   target_pose1.orientation.x = -1.0;
+  //   target_pose1.orientation.y = 0.00;
+  //   target_pose1.orientation.z = 0.00;
+  //   target_pose1.orientation.w = 0.00;
+  //   target_pose1.position.x = 0.3375;
+  //   target_pose1.position.y = -0.018;
+  //   target_pose1.position.z = 0.3;
+  //   move_group_arm.setPoseTarget(target_pose1);
 
   double xy_resolution = 0.00001, xy_goal_threshold = 0.00001;
 
-
   std::vector<geometry_msgs::msg::Pose> waypoints;
 
-  #if FINETUNE
-  while(abs(target_pose1.position.x - target_x)>xy_goal_threshold ){
-    target_pose1.position.x += xy_resolution*
-                (target_x - target_pose1.position.x )/abs(target_pose1.position.x - target_x);
+#if FINETUNE
+  while (abs(target_pose1.position.x - target_x) > xy_goal_threshold) {
+    target_pose1.position.x += xy_resolution *
+                               (target_x - target_pose1.position.x) /
+                               abs(target_pose1.position.x - target_x);
     waypoints.push_back(target_pose1);
   }
-  while(abs(target_pose1.position.y - target_y)>xy_goal_threshold ){
-    target_pose1.position.y += xy_resolution*
-                (target_y - target_pose1.position.y )/abs(target_pose1.position.y - target_y);
+  while (abs(target_pose1.position.y - target_y) > xy_goal_threshold) {
+    target_pose1.position.y += xy_resolution *
+                               (target_y - target_pose1.position.y) /
+                               abs(target_pose1.position.y - target_y);
     waypoints.push_back(target_pose1);
   }
 
   moveit_msgs::msg::RobotTrajectory trajectory;
-
 
   double fraction = move_group_arm.computeCartesianPath(
       waypoints, eef_step, jump_threshold, trajectory);
@@ -148,31 +144,28 @@ int main(int argc, char **argv) {
   move_group_arm.execute(trajectory);
 
   RCLCPP_INFO(LOGGER, "Current pose: %f %f %f %f %f %f %f",
-    current_pose.position.x,
-    current_pose.position.y,
-    current_pose.position.z,
-    current_pose.orientation.x,
-    current_pose.orientation.y,
-    current_pose.orientation.z,
-    current_pose.orientation.w);
-  #endif
-  #if JUMP_PICK_OBJECT
+              current_pose.position.x, current_pose.position.y,
+              current_pose.position.z, current_pose.orientation.x,
+              current_pose.orientation.y, current_pose.orientation.z,
+              current_pose.orientation.w);
+#endif
+#if JUMP_PICK_OBJECT
 
- 
-  RCLCPP_INFO(LOGGER, "Open Gripper! Current Target: x:%f y:%f close_angle:%f", target_x, target_y, close_gripper_angle);
+  RCLCPP_INFO(LOGGER, "Open Gripper! Current Target: x:%f y:%f close_angle:%f",
+              target_x, target_y, close_gripper_angle);
   joint_group_positions_gripper[2] = 0.55;
   move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
   moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
   bool success_gripper = (move_group_gripper.plan(my_plan_gripper) ==
-                     moveit::core::MoveItErrorCode::SUCCESS);
+                          moveit::core::MoveItErrorCode::SUCCESS);
 
   move_group_gripper.execute(my_plan_gripper);
   std::vector<geometry_msgs::msg::Pose> approach_waypoints;
   target_pose1.position.z -= 0.08;
   approach_waypoints.push_back(target_pose1);
 
-  //target_pose1.position.z -= 0.03;
-  //approach_waypoints.push_back(target_pose1);
+  // target_pose1.position.z -= 0.03;
+  // approach_waypoints.push_back(target_pose1);
 
   // JUMP code
   moveit_msgs::msg::RobotTrajectory trajectory_approach;
@@ -182,10 +175,9 @@ int main(int argc, char **argv) {
 
   move_group_arm.execute(trajectory_approach);
 
-  #endif
+#endif
 
-  #if GRIPPING
-
+#if GRIPPING
 
   // Sleep for some seconds
   std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -199,12 +191,11 @@ int main(int argc, char **argv) {
 
   move_group_gripper.execute(my_plan_gripper2);
 
-  #endif
+#endif
 
-    // Retreat
-  #if RETREAT
-  geometry_msgs::msg::Pose current_pose2 =
-  move_group_arm.getCurrentPose().pose;
+  // Retreat
+#if RETREAT
+  geometry_msgs::msg::Pose current_pose2 = move_group_arm.getCurrentPose().pose;
   RCLCPP_INFO(LOGGER, "Retreat from object!");
   geometry_msgs::msg::Pose target_pose2;
   target_pose2.position.x = current_pose2.position.x;
@@ -218,8 +209,8 @@ int main(int argc, char **argv) {
   target_pose2.position.z += 0.08;
   retreat_waypoints.push_back(target_pose2);
 
-//   target_pose2.position.z += 0.03;
-//   retreat_waypoints.push_back(target_pose2);
+  //   target_pose2.position.z += 0.03;
+  //   retreat_waypoints.push_back(target_pose2);
 
   moveit_msgs::msg::RobotTrajectory trajectory_retreat;
 
@@ -227,7 +218,7 @@ int main(int argc, char **argv) {
       retreat_waypoints, eef_step, jump_threshold, trajectory_retreat);
 
   move_group_arm.execute(trajectory_retreat);
-  #endif
+#endif
   // close_gripper_angle += 0.00001;
   //}//end while
   rclcpp::shutdown();
