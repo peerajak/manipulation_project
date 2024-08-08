@@ -3,7 +3,7 @@
 
 #include <moveit_msgs/msg/display_robot_state.hpp>
 #include <moveit_msgs/msg/display_trajectory.hpp>
-
+#include <unistd.h>
 #define MOVE_TO_PREAPPROACH 1
 #define FINETUNE 1
 #define JUMP_PICK_OBJECT 1
@@ -53,8 +53,9 @@ int main(int argc, char **argv) {
   const double jump_threshold = 0.0;
   const double eef_step = 0.01;
   double target_x = 0.340, target_y = -0.02;
+  double close_gripper_initial_angle = 0.64; 
   double close_gripper_angle =
-      0.646680; // Found 6468. Found 0.64668 another value which picked: 0.646568
+      0.64725; //Somewhere between 0.64725-0.64730
   // TODO try to slow down close grip speed.
   // while(true) {
 #if MOVE_TO_PREAPPROACH
@@ -151,8 +152,8 @@ int main(int argc, char **argv) {
 #endif
 #if JUMP_PICK_OBJECT
 
-  RCLCPP_INFO(LOGGER, "Open Gripper! Current Target: x:%f y:%f close_angle:%f",
-              target_x, target_y, close_gripper_angle);
+  RCLCPP_INFO(LOGGER, "Open Gripper! Current Target: x:%f y:%f",
+              target_x, target_y);
   joint_group_positions_gripper[2] = 0.55;
   move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
   moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
@@ -183,13 +184,22 @@ int main(int argc, char **argv) {
   std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   // Close Gripper
   // set name target.
-  joint_group_positions_gripper[2] = close_gripper_angle;
-  move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
-  moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper2;
-  success_gripper = (move_group_gripper.plan(my_plan_gripper2) ==
-                     moveit::core::MoveItErrorCode::SUCCESS);
+  double gripper_iter = close_gripper_initial_angle;
+  while(gripper_iter < close_gripper_angle){
+    RCLCPP_INFO(LOGGER, "Closing Gripper close_angle:%f", gripper_iter);
+    joint_group_positions_gripper[2] = gripper_iter;
+    move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper2;
+    success_gripper = (move_group_gripper.plan(my_plan_gripper2) ==
+                        moveit::core::MoveItErrorCode::SUCCESS);
 
-  move_group_gripper.execute(my_plan_gripper2);
+    move_group_gripper.execute(my_plan_gripper2);
+    //sleep(1.0);
+    
+    gripper_iter += 0.000005;
+  
+  }
+
 
 #endif
 

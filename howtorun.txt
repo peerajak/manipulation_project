@@ -31,9 +31,9 @@ ros2 launch the_construct_office_gazebo warehouse_ur3e.launch.xml
         - -3.382259716744329e-07
 
 Terminal 2.
-ros2 launch my_moveit_config move_group.launch.py
+source install/setup.bash;ros2 launch my_moveit_config move_group.launch.py
 Terminal 3.
-ros2 launch my_moveit_config moveit_rviz.launch.py
+source install/setup.bash;ros2 launch my_moveit_config moveit_rviz.launch.py
 === Task 2. ===
 Terminal 1.
 source ~/ros2_ws/install/setup.bash
