@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   node_options.automatically_declare_parameters_from_overrides(true);
   auto move_group_node =
       rclcpp::Node::make_shared("move_group_interface_tutorial", node_options);
-
+  unsigned int microseconds = 1;
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(move_group_node);
   std::thread([&executor]() { executor.spin(); }).detach();
@@ -53,9 +53,9 @@ int main(int argc, char **argv) {
   const double jump_threshold = 0.0;
   const double eef_step = 0.01;
   double target_x = 0.340, target_y = -0.02;
-  double close_gripper_initial_angle = 0.64; 
+  double close_gripper_initial_angle = 0.642;
   double close_gripper_angle =
-      0.64725; //Somewhere between 0.64725-0.64730
+      0.6460; // 0.6460 completely liftup, and retreat for 20 secs!. 0.646675 lifted up, but slide out after retreat in 2 secs
   // TODO try to slow down close grip speed.
   // while(true) {
 #if MOVE_TO_PREAPPROACH
@@ -152,8 +152,8 @@ int main(int argc, char **argv) {
 #endif
 #if JUMP_PICK_OBJECT
 
-  RCLCPP_INFO(LOGGER, "Open Gripper! Current Target: x:%f y:%f",
-              target_x, target_y);
+  RCLCPP_INFO(LOGGER, "Open Gripper! Current Target: x:%f y:%f", target_x,
+              target_y);
   joint_group_positions_gripper[2] = 0.55;
   move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
   moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
@@ -179,27 +179,27 @@ int main(int argc, char **argv) {
 #endif
 
 #if GRIPPING
+  double step_size_factor = 1.0;
 
   // Sleep for some seconds
   std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   // Close Gripper
   // set name target.
   double gripper_iter = close_gripper_initial_angle;
-  while(gripper_iter < close_gripper_angle){
+  while (gripper_iter < close_gripper_angle) {
     RCLCPP_INFO(LOGGER, "Closing Gripper close_angle:%f", gripper_iter);
     joint_group_positions_gripper[2] = gripper_iter;
     move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
     moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper2;
     success_gripper = (move_group_gripper.plan(my_plan_gripper2) ==
-                        moveit::core::MoveItErrorCode::SUCCESS);
+                       moveit::core::MoveItErrorCode::SUCCESS);
 
     move_group_gripper.execute(my_plan_gripper2);
-    //sleep(1.0);
-    
-    gripper_iter += 0.000005;
-  
+    // sleep(1.0);
+    // step_size_factor = (close_gripper_angle - gripper_iter)*1000;
+    gripper_iter += step_size_factor * 0.000005;
+    usleep(microseconds);
   }
-
 
 #endif
 
@@ -231,6 +231,9 @@ int main(int argc, char **argv) {
 #endif
   // close_gripper_angle += 0.00001;
   //}//end while
+  while (true) {
+    sleep(5);
+  }
   rclcpp::shutdown();
   return 0;
 }
