@@ -76,9 +76,9 @@ ros2 action send_goal /gripper_controller/gripper_cmd control_msgs/action/Grippe
 ================ Real Robot ==================
 === Task 1.5 ====
 Terminal 1.
-ros2 launch my_moveit_config move_group.launch.py
+ros2 launch real_moveit_config move_group.launch.py
 Terminal 2.
-ros2 launch my_moveit_config moveit_rviz.launch.py
+ros2 launch real_moveit_config moveit_rviz.launch.py
 
 
 ///// Param
