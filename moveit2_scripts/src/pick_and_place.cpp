@@ -9,6 +9,8 @@
 #define JUMP_PICK_OBJECT 1
 #define GRIPPING 1
 #define RETREAT 1
+#define TURN180 1
+#define RELEASE 1
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_group_demo");
 
 int main(int argc, char **argv) {
@@ -109,15 +111,7 @@ int main(int argc, char **argv) {
   target_pose1.orientation.y = 0.00;
   target_pose1.orientation.z = 0.00;
   target_pose1.orientation.w = 0.00;
-  //   geometry_msgs::msg::Pose target_pose1;
-  //   target_pose1.orientation.x = -1.0;
-  //   target_pose1.orientation.y = 0.00;
-  //   target_pose1.orientation.z = 0.00;
-  //   target_pose1.orientation.w = 0.00;
-  //   target_pose1.position.x = 0.3375;
-  //   target_pose1.position.y = -0.018;
-  //   target_pose1.position.z = 0.3;
-  //   move_group_arm.setPoseTarget(target_pose1);
+
 
   double xy_resolution = 0.00001, xy_goal_threshold = 0.00001;
 
@@ -231,9 +225,30 @@ int main(int argc, char **argv) {
 #endif
   // close_gripper_angle += 0.00001;
   //}//end while
-  while (true) {
-    sleep(5);
-  }
+//   while (true) {
+//     sleep(5);
+//   }
+#if TURN180
+
+  joint_group_positions_arm[0] -= 3.14;
+
+  move_group_arm.setJointValueTarget(joint_group_positions_arm);
+  moveit::planning_interface::MoveGroupInterface::Plan my_plan_arm3;
+  bool success_arm3 = (move_group_arm.plan(my_plan_arm3) ==
+                      moveit::core::MoveItErrorCode::SUCCESS);
+
+  move_group_arm.execute(my_plan_arm3);
+
+
+#endif
+
+#if RELEASE
+  RCLCPP_INFO(LOGGER, "Release Object!");
+  move_group_gripper.setNamedTarget("gripper_open");
+  success_gripper = (move_group_gripper.plan(my_plan_gripper) ==
+                     moveit::core::MoveItErrorCode::SUCCESS);
+  move_group_gripper.execute(my_plan_gripper);
+#endif
   rclcpp::shutdown();
   return 0;
 }
