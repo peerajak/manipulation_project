@@ -54,10 +54,11 @@ int main(int argc, char **argv) {
   move_group_gripper.setStartStateToCurrentState();
   const double jump_threshold = 0.0;
   const double eef_step = 0.01;
-  double target_x = 0.340, target_y = -0.02;
+  double target_x = 0.343;
+  double target_y = 0.132;
   double close_gripper_initial_angle = 0.642;
   double close_gripper_angle =
-      0.6460; // 0.6460 completely liftup, and retreat for 20 secs!. 0.646675 lifted up, but slide out after retreat in 2 secs
+      0.64217; // 0.6460 completely liftup, and retreat for 20 secs!. 0.646675 lifted up, but slide out after retreat in 2 secs
   // TODO try to slow down close grip speed.
   // while(true) {
 #if MOVE_TO_PREAPPROACH
@@ -148,7 +149,7 @@ int main(int argc, char **argv) {
 
   RCLCPP_INFO(LOGGER, "Open Gripper! Current Target: x:%f y:%f", target_x,
               target_y);
-  joint_group_positions_gripper[2] = 0.55;
+  joint_group_positions_gripper[2] = 0.15;
   move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
   moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper;
   bool success_gripper = (move_group_gripper.plan(my_plan_gripper) ==
@@ -156,7 +157,7 @@ int main(int argc, char **argv) {
 
   move_group_gripper.execute(my_plan_gripper);
   std::vector<geometry_msgs::msg::Pose> approach_waypoints;
-  target_pose1.position.z -= 0.08;
+  target_pose1.position.z -= 0.01;
   approach_waypoints.push_back(target_pose1);
 
   // target_pose1.position.z -= 0.03;
@@ -191,7 +192,7 @@ int main(int argc, char **argv) {
     move_group_gripper.execute(my_plan_gripper2);
     // sleep(1.0);
     // step_size_factor = (close_gripper_angle - gripper_iter)*1000;
-    gripper_iter += step_size_factor * 0.000005;
+    gripper_iter += step_size_factor * 0.0005;
     usleep(microseconds);
   }
 

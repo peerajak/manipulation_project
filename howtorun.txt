@@ -46,9 +46,9 @@ Terminal 3.
 ros2 launch my_moveit_config moveit_rviz.launch.py
 
 Terminal 4.
-ros2 launch moveit2_scripts pick_place.launch.py
-ros2 launch moveit2_scripts cartesian_to_preapproach.launch.py
-//////////////// Control robot position manually
+ros2 launch moveit2_scripts pick_and_place.launch.py
+
+================ Control robot position manually ================
 Terminal 1.
 source ~/ros2_ws/install/setup.bash
 ros2 launch the_construct_office_gazebo warehouse_ur3e.launch.xml
@@ -81,7 +81,25 @@ Terminal 2.
 ros2 launch real_moveit_config moveit_rviz.launch.py
 
 
-///// Param
+=== Task 2.5 ====
+Terminal 1.
+ros2 launch real_moveit_config move_group.launch.py
+Terminal 2.
+ros2 launch real_moveit_config moveit_rviz.launch.py
+Terminal 3.
+ros2 launch moveit2_scripts pick_and_place_realrobot.launch.py
+
+
+
+=== Move Block to inital position ===
+ros2 launch ur3e_helper_scripts display_current_pose.launch.py use_sim_time:=False
+ros2 launch ur3e_helper_scripts move_to_blocks.launch.py use_sim_time:=False
+ros2 launch ur3e_helper_scripts setup_grasp_object.launch.py use_sim_time:=False use_block:=True slim_grip:=True 
+ros2 launch ur3e_helper_scripts setup_grasp_object.launch.py use_block:=True standing:=True slim_grip:=True
+ros2 launch ur3e_helper_scripts setup_grasp_object.launch.py use_block:=True standing:=True wide_grip:=True
+ros2 launch ur3e_helper_scripts setup_grasp_object.launch.py use_block:=True lying:=True slim_grip:=True
+ros2 launch ur3e_helper_scripts setup_grasp_object.launch.py use_block:=True lying:=True wide_grip:=True
+================ Param ================
 
 ros2 service call /move_group/get_parameters rcl_interfaces/srv/GetParameters names:\ ['robot_description_planning.joint_limits.robotiq_85_left_knuckle_joint.max_effort']\
 ros2 service call /move_group/list_parameters rcl_interfaces/srv/ListParameters > move_group_param_list.txt
