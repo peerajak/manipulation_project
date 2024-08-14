@@ -11,7 +11,7 @@ The Pick&Place pipeline should perform the following sequence of motions:
 ![alt text](cp13_1_pregrasp_closed.png)
 ![alt text](cp13_2_pregrasp_open.png)
 ![alt text](cp13_3_grasp_open.png)
-![alt text](cp13_4_grasp_close.png)
+![alt text](cp13_4_grasp_closed.png)
 ![alt text](cp13_5_pregrasp_closed_2.png)
 ![alt text](cp13_6_place_closed.png)
 ![alt text](cp13_7_place_open.png)
