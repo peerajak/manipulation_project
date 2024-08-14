@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   move_group_gripper.setStartStateToCurrentState();
   const double jump_threshold = 0.0;
   const double eef_step = 0.01;
-  double target_x = 0.340, target_y = -0.02;
+  double target_x = 0.340, target_y = -0.020;
   double close_gripper_initial_angle = 0.642;
   double close_gripper_angle =
       0.6460; // 0.6460 completely liftup, and retreat for 20 secs!. 0.646675 lifted up, but slide out after retreat in 2 secs
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
 
   RCLCPP_INFO(LOGGER, "Approach to object!");
   geometry_msgs::msg::Pose target_pose1;
-  target_pose1.position.x = current_pose.position.x;
+  target_pose1.position.x = current_pose.position.x;//start with current, and waypont to real target
   target_pose1.position.y = current_pose.position.y;
   target_pose1.position.z = current_pose.position.z;
   target_pose1.orientation.x = -1.0;
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
   target_pose1.orientation.w = 0.00;
 
 
-  double xy_resolution = 0.00001, xy_goal_threshold = 0.00001;
+  double xy_resolution = 0.000001, xy_goal_threshold = 0.000001;
 
   std::vector<geometry_msgs::msg::Pose> waypoints;
 
@@ -180,9 +180,8 @@ int main(int argc, char **argv) {
   // Close Gripper
   // set name target.
   double gripper_iter = close_gripper_initial_angle;
-  while (gripper_iter < close_gripper_angle) {
-    RCLCPP_INFO(LOGGER, "Closing Gripper close_angle:%f", gripper_iter);
-    joint_group_positions_gripper[2] = gripper_iter;
+  while (gripper_iter <= close_gripper_angle ) {
+    joint_group_positions_gripper[2] = gripper_iter;// <= close_gripper_angle ? gripper_iter: close_gripper_angle;
     move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
     moveit::planning_interface::MoveGroupInterface::Plan my_plan_gripper2;
     success_gripper = (move_group_gripper.plan(my_plan_gripper2) ==
@@ -191,7 +190,17 @@ int main(int argc, char **argv) {
     move_group_gripper.execute(my_plan_gripper2);
     // sleep(1.0);
     // step_size_factor = (close_gripper_angle - gripper_iter)*1000;
-    gripper_iter += step_size_factor * 0.000005;
+    RCLCPP_INFO(LOGGER, "Closing Gripper close_angle:%f", gripper_iter);
+    // if(close_gripper_angle - gripper_iter > 0.003)
+    //      step_size_factor = 2.0;
+        
+    // // else if (close_gripper_angle - gripper_iter <= 0.002 && close_gripper_angle - gripper_iter > 0.001)
+    // //      step_size_factor = 1.5;
+    
+    // else //if(close_gripper_angle - gripper_iter < 0.001)
+    //     step_size_factor = 1.0;
+        
+    gripper_iter += step_size_factor *  0.00001;
     usleep(microseconds);
   }
 

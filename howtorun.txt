@@ -73,6 +73,9 @@ ros2 action send_goal /gripper_controller/gripper_cmd control_msgs/action/Grippe
   position: 0.64
   max_effort: 5.0
 "
+== Test use of ur3e_helper_scripts move_block package
+If so, you just have to use this command to spawn an object of your choice in front of the camera perception area.
+ros2 launch ur3e_helper_scripts spawn_grasp_object.launch.py mass:=0.050 xsize:=0.0150 ysize:=0.0250 zsize:=0.0750 color:=random x:=5.2800 y:=-3.8400 z:=0.9550 R:=0.0000 P:=0.0000 Y:=0.0000
 ================ Real Robot ==================
 === Task 1.5 ====
 Terminal 1.
