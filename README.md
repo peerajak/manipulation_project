@@ -1,4 +1,4 @@
-# manipulation_project
+# The Construct's Checkpoint 13: manipulation_project
 
 ## Task 2   MoveIt2 C++ API 
 Now that MoveIt2 is working with the robot arm, you will have to create a program that uses the MoveIt2 C++ API that instructs the arm to follow a pick and place sequence.
