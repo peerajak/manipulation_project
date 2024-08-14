@@ -19,17 +19,30 @@ The Pick&Place pipeline should perform the following sequence of motions:
 
 ### How to run
 Terminal 1.
+
 source ~/ros2_ws/install/setup.bash
+
 ros2 launch the_construct_office_gazebo warehouse_ur3e.launch.xml
 
+
+
 Terminal 2.
+
 ros2 launch my_moveit_config move_group.launch.py
 
+
+
 Terminal 3.
+
 ros2 launch my_moveit_config moveit_rviz.launch.py
 
+
+
 Terminal 4.
+
 ros2 launch moveit2_scripts pick_and_place.launch.py
+
+
 
 ## Task 2.5   Test everything in the real robot lab 
 
@@ -38,9 +51,19 @@ target_pose.position.x = 0.343;
 target_pose.position.y = 0.132;
 
 How to run
+
 Terminal 1.
+
 ros2 launch real_moveit_config move_group.launch.py
+
+
+
 Terminal 2.
+
 ros2 launch real_moveit_config moveit_rviz.launch.py
+
+
+
 Terminal 3.
+
 ros2 launch moveit2_scripts pick_and_place_realrobot.launch.py
