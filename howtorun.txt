@@ -109,3 +109,27 @@ ros2 service call /move_group/list_parameters rcl_interfaces/srv/ListParameters 
 awk 'BEGIN{RS=","}{print $1}' move_group_param_list.txt | grep -i effort > move_group_param_list2.txt
 ros2 param set /gripper_controller max_effort 50.0
 ros2 param get /gripper_controller max_effort
+
+
+//========================= CHECKPOINT 14 =======================//
+================ Simulation Robot =====================
+Terminal 1.
+ros2 run simple_grasping basic_grasping_perception_node --ros-args -p debug_topics:=true
+
+Terminal 2
+rviz2 -d /home/user/ros2_ws/src/manipulation_project/rviz2_config.rviz
+
+Terminal 3.
+source ~/ros2_ws/install/setup.bash
+ros2 launch the_construct_office_gazebo warehouse_ur3e.launch.xml
+
+Terminal 4.
+ros2 launch my_moveit_config move_group.launch.py
+
+Terminal 5.
+ros2 launch my_moveit_config moveit_rviz.launch.py
+
+Terminal 6.
+ros2 launch moveit2_scripts pick_and_place_perception.launch.py
+
+================ Real Robot =====================

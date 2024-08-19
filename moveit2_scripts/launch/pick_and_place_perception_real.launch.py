@@ -13,9 +13,9 @@ def generate_launch_description():
 
     # MoveItCpp demo executable
     moveit_cpp_node = Node(
-        name="pick_and_place_perception_real",
+        name="pick_and_place_realrobot",
         package="moveit2_scripts",
-        executable="pick_and_place_perception_real",
+        executable="pick_and_place_realrobot",
         output="screen",
         parameters=[
             moveit_config.robot_description,

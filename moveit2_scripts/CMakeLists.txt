@@ -71,6 +71,33 @@ ament_target_dependencies(pick_and_place_realrobot
 	moveit_ros_planning
 	control_msgs)
 
+add_executable(pick_and_place_perception
+    src/pick_and_place_perception.cpp)
+target_include_directories(pick_and_place_perception
+    PUBLIC include)
+ament_target_dependencies(pick_and_place_perception
+    ament_cmake
+	rclcpp
+	rclcpp_action
+	moveit_core
+	moveit_ros_planning_interface
+	interactive_markers
+	moveit_ros_planning
+	control_msgs)
+
+add_executable(pick_and_place_perception_real
+    src/pick_and_place_perception_real.cpp)
+target_include_directories(pick_and_place_perception_real
+    PUBLIC include)
+ament_target_dependencies(pick_and_place_perception_real
+    ament_cmake
+	rclcpp
+	rclcpp_action
+	moveit_core
+	moveit_ros_planning_interface
+	interactive_markers
+	moveit_ros_planning
+	control_msgs)
 
 add_executable(test_gripper
     src/test_gripper.cpp)
@@ -91,6 +118,8 @@ install(TARGETS
 	test_trajectory
 	pick_and_place
 	pick_and_place_realrobot
+	pick_and_place_perception
+	pick_and_place_perception_real
 	test_gripper
     DESTINATION lib/${PROJECT_NAME}
 )
