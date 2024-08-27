@@ -54,8 +54,13 @@ int main(int argc, char **argv) {
   move_group_gripper.setStartStateToCurrentState();
   const double jump_threshold = 0.0;
   const double eef_step = 0.01;
-  double target_x = 0.343;
-  double target_y = 0.132;
+  //[INFO] [1724730576.052640864] [get_pose_client]: X: 0.326237
+  //[INFO] [1724730576.052664350] [get_pose_client]: Y: 0.126106
+  double target_x_from_perception = 0.326237;
+  double target_y_from_perception = 0.126106;
+  double offset_x = 0.01663, offset_y = 0.005894;
+  double target_x = target_x_from_perception + offset_x;// 0.343 was the answer of CP13
+  double target_y = target_y_from_perception + offset_y;// 0.132 was the answer of CP13
   double close_gripper_initial_angle = 0.642;
   double close_gripper_angle =
       0.64217; // 0.6460 completely liftup, and retreat for 20 secs!. 0.646675 lifted up, but slide out after retreat in 2 secs

@@ -47,4 +47,10 @@ install(TARGETS
   get_pose_client_v2
   DESTINATION lib/${PROJECT_NAME})
 
+# Install the launch file
+install(DIRECTORY 
+	launch
+    DESTINATION share/${PROJECT_NAME}
+)
+
 ament_package()
