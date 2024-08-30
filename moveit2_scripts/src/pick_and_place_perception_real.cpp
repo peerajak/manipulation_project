@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 #endif
 
 #if GRIPPING
-  double step_size_factor = 1.0;
+  double step_size = 0.0005;
 
   // Sleep for some seconds
   std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -197,7 +197,7 @@ int main(int argc, char **argv) {
     move_group_gripper.execute(my_plan_gripper2);
     // sleep(1.0);
     // step_size_factor = (close_gripper_angle - gripper_iter)*1000;
-    gripper_iter += step_size_factor * 0.0005;
+    gripper_iter += step_size;
     usleep(microseconds);
   }
 

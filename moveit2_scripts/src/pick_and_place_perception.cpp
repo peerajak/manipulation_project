@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
   double offset_x = 0.012079, offset_y = -0.009217;
   double target_x = target_x_from_perception + offset_x;
   double target_y = target_y_from_perception + offset_y;
-  double close_gripper_initial_angle = 0.642;
+  double close_gripper_initial_angle = 0.642;//0.642 a good value
   double close_gripper_angle =
       0.6460; // 0.6460 completely liftup, and retreat for 20 secs!. 0.646675 lifted up, but slide out after retreat in 2 secs
   // TODO try to slow down close grip speed.
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 #endif
 
 #if GRIPPING
-  double step_size_factor = 1.0;
+  double step_size = 0.00001;
 
   // Sleep for some seconds
   std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -193,18 +193,13 @@ int main(int argc, char **argv) {
 
     move_group_gripper.execute(my_plan_gripper2);
     // sleep(1.0);
-    // step_size_factor = (close_gripper_angle - gripper_iter)*1000;
+
     RCLCPP_INFO(LOGGER, "Closing Gripper close_angle:%f", gripper_iter);
-    // if(close_gripper_angle - gripper_iter > 0.003)
-    //      step_size_factor = 2.0;
-        
-    // // else if (close_gripper_angle - gripper_iter <= 0.002 && close_gripper_angle - gripper_iter > 0.001)
-    // //      step_size_factor = 1.5;
-    
-    // else //if(close_gripper_angle - gripper_iter < 0.001)
-    //     step_size_factor = 1.0;
-        
-    gripper_iter += step_size_factor *  0.00001;
+    //  if (gripper_iter < 0.64) step_size = 0.02;  
+    // if (gripper_iter >= 0.64 && gripper_iter < 0.643) step_size = 0.0001;
+    // if (gripper_iter >= 0.643 && gripper_iter < 0.645) step_size = 0.00005;
+    // if (gripper_iter >= 0.645) step_size= 0.000005;
+    gripper_iter += step_size;
     usleep(microseconds);
   }
 

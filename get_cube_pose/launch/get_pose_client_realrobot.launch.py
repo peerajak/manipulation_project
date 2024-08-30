@@ -14,7 +14,8 @@ def generate_launch_description():
         name="basic_grasping_perception_node",
         package="simple_grasping",
         executable="basic_grasping_perception_node",
-        arguments=["--ros-args", "-p", "debug_topics:=true"],
+        arguments=["--ros-args", "-p", "debug_topics:=true", 
+        "-r", "/wrist_rgbd_depth_sensor/points:=/camera/depth/color/points"],
         output="screen"
     ),    
         Node(
