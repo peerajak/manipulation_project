@@ -106,3 +106,29 @@ ros2 launch real_moveit_config moveit_rviz.launch.py
 ```
 ros2 launch moveit2_scripts pick_and_place_perception_real.launch.py
 ```
+
+## Home Environment (Sim only)
+
+Terminal 1
+
+```
+ros2 launch the_construct_office_gazebo warehouse_ur3e.launch.xml
+```
+
+Terminal 2
+
+```
+ros2 launch my_moveit_config_cp13 move_group.launch.py
+```
+
+Terminal 3
+
+```
+ros2 launch my_moveit_config_cp13 moveit_rviz.launch.py
+```
+
+Terminal 4
+
+```
+ros2 launch moveit2_scripts_cp13 pick_and_place.launch.py
+```
